@@ -20,10 +20,6 @@ Peer_Client will take “file_Name” as an input from the user. Then it connect
 
 After each negotiation phase, the TCP connection on both sides are closed gracefully releasing the socket resource.
 
-**Prototypes for Client and Server**  
-**Client:** <executable code><Server IP Address><Server Port number>  
-**Server:** <executable code><Server Port number>
-
 
 ## How to use this
 1. compile the three codes  
