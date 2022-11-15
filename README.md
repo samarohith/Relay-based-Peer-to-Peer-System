@@ -18,10 +18,7 @@ Relay_Server, the Peer_Client closes the connection gracefully.
 **In third phase**, a set of files (say .txt) are distributed evenly among the three Peer_Nodes. The
 Peer_Client will take “file_Name” as an input from the user. Then it connects to the Peer_Nodes one at a time using the response information. After successful connection, the Peer_Client tries to fetches the file from the Peer_Node. If the file is present with the Peer_Node, it will provide the file content to the Peer_Client and the Peer_Client will print the file content in its terminal. If not, Peer_Client will connect the next Peer_Node and performs the above action. This will continue till the Peer_Client gets the file content or all the entries in the Relay_Server Response are exhausted (Assume only three/four Peer_Nodes in the system).
 
-Implement the functionalities using appropriate REQUEST and RESPONSE Message formats. After each
-negotiation phase, the TCP connection on both sides should be closed gracefully releasing the socket
-resource. You should accept the IP Address and Port number from the command line (Don't use a hard-
-coded port number). Prototype for command line is as follows:
+After each negotiation phase, the TCP connection on both sides are closed gracefully releasing the socket resource.
 
 **Prototypes for Client and Server**  
 **Client:** <executable code><Server IP Address><Server Port number>  
