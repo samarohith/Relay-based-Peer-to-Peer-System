@@ -91,10 +91,9 @@ int main(int argc, char *argv[])
     
     int peer_node_address_len = sizeof(peer_node_address);
    
-    for (int i = 0; i >= 0; i++){ //infinite loop, peer node doesn't close unless program terminated by user or by error
-            
+    for (int i = 0; i >= 0; i++) //infinite loop, peer node doesn't close unless program terminated by user or by error
+    {      
         char filename[max_buffer_size]={0}; //reinitialize filename buffer for every request
-
         struct sockaddr_in client_address;
         int client_address_len = sizeof(client_address);
         int client_id;
