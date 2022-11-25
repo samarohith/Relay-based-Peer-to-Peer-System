@@ -28,11 +28,8 @@ After each negotiation phase, the TCP connection on both sides are closed gracef
 	 c++ -o node node.c  
      (the nodes can be in other directories as well, it doesn't matter.)
 2. run 
-    /server serverport 
-    /node serveraddress serverport
-	/node <serveraddress> <serverport>  
-	/node <serveraddress> <serverport>  
-	/client <serveraddress> <serverport>   
-	server address is localhost here
+    for server: ./server serverport
+    for client: ./node serverIp serverPort clientPort
+    server address is localhost here
 3. The requested file should be with a node. The client will ask for a file name and return the file if it is found with any node.
 
