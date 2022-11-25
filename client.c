@@ -6,9 +6,6 @@
 
 #define buffer_size 1024
 
-void process_file(int, struct sockaddr_in[]);
-
-
 
 void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
 {
