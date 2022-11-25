@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 	printf("Server established with server port number = %d\n\n",ntohs(serv_addr.sin_port));    // server running
 
-	listen(sockfd,2); 		// accepting connections, backlog=5
+	listen(sockfd,5); 		// accepting connections, backlog=5
 
 	struct sockaddr_in client_addr;
 	int client_addr_len = sizeof(client_addr);
