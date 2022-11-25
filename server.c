@@ -10,16 +10,14 @@ int main(int argc, char *argv[])
 {
  	int i = 0, sockfd;
  	char buffer[buffer_size];
- 	int _c = 2;
-	if(argc != _c)
+	if(argc != 2)
 	{
-		printf("\nInput format: %s <Server port number> , terminating! \n",argv[0]);       // invalid input by user
+		printf("\nInput format: %s <Server port number> , terminating! \n", argv[0]);       // invalid input by user
 		return -1;
 	}
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);       // socket file descriptor for server
-        int _z = 0;
-	if(sockfd < _z)
+	if(sockfd < 0)
 	{ 						 // failed to get valid socket file descriptor
 		perror("Socket error, terminating! \n");
 		return -1;
@@ -30,7 +28,7 @@ int main(int argc, char *argv[])
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(atoi(argv[1]));
 
-	if(bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < _z)
+	if(bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
 		perror("Unable to bind, terminating!\n");		//bind failed
 		return -1;
@@ -42,26 +40,26 @@ int main(int argc, char *argv[])
 
 	struct sockaddr_in client_addr;
 	int client_addr_len = sizeof(client_addr);
-	int peer_count = _z;
+	int peer_count = 0;
 	int peer_ids[buffer_size];
 	struct sockaddr_in peer_addresses[buffer_size];
 	
 
-	for (i = _z; i >= _z; i++)     // infinite loop, server doesn't close unless program terminated by user or by error
+	for (i = 0; i >= 0; i++)     // infinite loop, server doesn't close unless program terminated by user or by error
 	{ 
 	
 		memset(buffer,'\0',sizeof(buffer));
 
 		int client_id = accept(sockfd, (struct sockaddr *)&client_addr , (socklen_t *)&client_addr_len);   // clients that are requesting connection with the server
 
-		if(client_id < _z)
+		if(client_id < 0)
 		{
 			perror("Accept error, couldn't accept connection\n");
 			return -1;
 		}
 		printf("Connection accepted \n");
 
-		if(recv(client_id,buffer,buffer_size,_z) < _z)     // message received from client
+		if(recv(client_id,buffer,buffer_size,0) < 0)     // message received from client
 		{
 			perror("Message not received by server\n");
 			return -1;
@@ -77,7 +75,7 @@ int main(int argc, char *argv[])
 			portno = atoi(temp);
 
 		char msg[] = "Hi there! This is the server.";	
-		int msg_len=strlen(msg);	
+		int msg_len = strlen(msg);	
 
 
 		if(*type == '0')
@@ -92,14 +90,14 @@ int main(int argc, char *argv[])
 			sprintf(msg,"%s$%d",msg,peer_count);
 			printf("Number of peer nodes = %d\n",peer_count);
 
-			for(i = _z; i < peer_count; i++)    // fetching details of all peer nodes
+			for(i = 0; i < peer_count; i++)    // fetching details of all peer nodes
 			{
 				inet_ntop(AF_INET, &(peer_addresses[i].sin_addr), ip_addr, buffer_size);
 				sprintf(msg,"%s:%s:%d",msg,ip_addr,peer_addresses[i].sin_port);
 			}
 
 			//sending details of all the peer nodes to the peer client
-			if(send(client_id,msg ,strlen(msg),_z) != strlen(msg))
+			if(send(client_id, msg , strlen(msg), 0) != strlen(msg))
 			{
 				perror("Message not sent\n");
 				exit(-1);
@@ -117,7 +115,7 @@ int main(int argc, char *argv[])
 			printf("Peer node IP: %s\n",inet_ntop(AF_INET, &(client_addr.sin_addr), temp, buffer_size));
 
 			// server sends connection confirmation
-			if(send(client_id,msg,msg_len,_z) != msg_len)
+			if(send(client_id,msg,msg_len,0) != msg_len)
 			{
 			perror("Message not sent from server\n");
 			return -1;
