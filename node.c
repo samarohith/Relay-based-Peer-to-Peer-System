@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     if(recv(socket_id,buffer,max_buffer_size,0) < 0){
             perror("Message sent by server, not received by peer node\n");
       	    return -1;
-        }
+    }
         
     printf("Server says: %s\n",buffer);
 
