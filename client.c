@@ -12,7 +12,6 @@ void process_file(int, struct sockaddr_in[]);
 
 void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
 {
-    int 0 = 0;
     int sockfd, found = 0;
     char buffer[buffer_size], filename[buffer_size];
     
