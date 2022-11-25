@@ -28,8 +28,8 @@ After each negotiation phase, the TCP connection on both sides are closed gracef
 	 c++ -o node node.c  
      (the nodes can be in other directories as well, it doesn't matter.)
 2. run 
-    /server <serverport>  
-    /node <serveraddress> <serverport>  
+    /server serverport 
+    /node serveraddress serverport
 	/node <serveraddress> <serverport>  
 	/node <serveraddress> <serverport>  
 	/client <serveraddress> <serverport>   
