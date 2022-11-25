@@ -12,30 +12,30 @@ void process_file(int, struct sockaddr_in[]);
 
 void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
 {
-    int _z = 0;
-    int sockfd, found = _z;
+    int 0 = 0;
+    int sockfd, found = 0;
     char buffer[buffer_size], filename[buffer_size];
     
     printf("\nEnter the name of the file: ");
     scanf("%s",filename); // take filename as input from user
     printf("\n");
     
-    for(int i = _z; i < p_count; i++)  // search in all peer nodes
+    for(int i = 0; i < p_count; i++)  // search in all peer nodes
     { 
         char ip_addr[buffer_size];
         printf("Peer node number:%d\n",i+1);
         printf("Peer node port: %d\n",ntohs(p_address[i].sin_port));
         printf("Peer node IP: %s\n",inet_ntop(AF_INET, &(p_address[i].sin_addr), ip_addr, buffer_size));
         
-        sockfd = socket(AF_INET, SOCK_STREAM, _z);
+        sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-        if(sockfd < _z)
+        if(sockfd < 0)
         {
             printf("\n Socket creation error \n");
             return -1;
         }
 
-        if(connect(sockfd, (struct sockaddr *)&(p_address[i]), sizeof(p_address[i])) < _z)    // Connecting with peer nodes
+        if(connect(sockfd, (struct sockaddr *)&(p_address[i]), sizeof(p_address[i])) < 0)    // Connecting with peer nodes
         {
            printf("\n Couldn't connect to peer node\n");
            return -1;
@@ -85,7 +85,7 @@ void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
         FILE *rcvd_file = fopen(filename,"w");
         int len;
 
-        while(remaining_bytes > _z && (len = recv(sockfd, buffer, buffer_size, _z)) > _z)
+        while(remaining_bytes > 0 && (len = recv(sockfd, buffer, buffer_size, 0)) > 0)
         {
             fwrite(buffer, sizeof(char), len, rcvd_file);
             remaining_bytes = remaining_bytes - len;
@@ -100,7 +100,7 @@ void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
     
     }
 
-    if(found == _z) // not found in any of the peers
+    if(found == 0) // not found in any of the peers
     {
         printf("File not found in all peer_nodes\n");
     }
@@ -203,9 +203,7 @@ int main(int argc, char *argv[])
     }
 
     close(sockfd); 
-    
     process_file(peer_count, peer_address);
-    
     return 1;
     
 }
