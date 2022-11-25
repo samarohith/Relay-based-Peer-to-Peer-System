@@ -26,50 +26,42 @@ void request(char *argv[],int socket_id){
 
 int main(int argc, char *argv[])
 {
-    int _a = 4;
-    if(argc != _a)           //Invalid input by user
+    if(argc != 4)           //Invalid input by user
     {
         printf("\nInput format: %s <Server IP peer_node_address> <Server port number> <Peer port number>  \n",argv[0]);
         return -1;
     } 
 
     int socket_id = socket(AF_INET, SOCK_STREAM, 0);    //socket file descriptor for peer node
-    int _z = 0;
-    if ( socket_id < _z)                                 // failed to get valid socket file descriptor
+    if ( socket_id < 0)                                 // failed to get valid socket file descriptor
     {
         perror("\n Socket creation error for peer node, terminating! \n");
         return -1;
     }
 
     struct sockaddr_in server_address,peer_node_address;
-
     server_address.sin_family = AF_INET;                     //initializing peer_node_address attributes
-    
     server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-    
     server_address.sin_port = htons(atoi(argv[2]));
+    char buffer[max_buffer_size]={0};
 
-    char buffer[max_buffer_size]={_z};
-
-    if(inet_pton(AF_INET, argv[1], &server_address.sin_addr)<=_z)
+    if(inet_pton(AF_INET, argv[1], &server_address.sin_addr)<=0)
     {
         perror("\n Invalid server IP peer_node_address , terminating! \n"); //invalid IP peer_node_address provided by user  
         return -1;
     }
     
-    if( connect(socket_id, (struct sockaddr *)&server_address, sizeof(server_address)) < _z)
+    if( connect(socket_id, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
     {
        perror("\n Connection of peer node to server failed, terminating! \n");
        return -1;
     }
 
     // Requesting response from relay server
-    
      request(argv,socket_id);
 
     // Response received from relay sever---
-    
-    if(recv(socket_id,buffer,max_buffer_size,_z) < _z){
+    if(recv(socket_id,buffer,max_buffer_size,0) < 0){
             perror("Message sent by server, not received by peer node\n");
       	    return -1;
         }
@@ -84,13 +76,13 @@ int main(int argc, char *argv[])
     peer_node_address.sin_addr.s_addr = htonl(INADDR_ANY);
     peer_node_address.sin_port = htons(atoi(argv[3]));
     
-    if ((socket_id = socket(AF_INET, SOCK_STREAM, _z)) < _z)
+    if ((socket_id = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         perror("\n Socket creation error for peer node in Phase three \n");
         return -1;
     }
 
-    if(bind(socket_id, (struct sockaddr *)&peer_node_address, sizeof(peer_node_address)) < _z){
+    if(bind(socket_id, (struct sockaddr *)&peer_node_address, sizeof(peer_node_address)) < 0){
         perror("Unable to bind peer node in Phase three!");
         return -1;
     }
@@ -100,43 +92,43 @@ int main(int argc, char *argv[])
     
     int peer_node_address_len = sizeof(peer_node_address);
    
-    for (int i=_z;i>=_z;i++){ //infinite loop, peer node doesn't close unless program terminated by user or by error
+    for (int i = 0; i >= 0; i++){ //infinite loop, peer node doesn't close unless program terminated by user or by error
             
-        char filename[max_buffer_size]={_z}; //reinitialize filename buffer for every request
+        char filename[max_buffer_size]={0}; //reinitialize filename buffer for every request
 
         struct sockaddr_in client_address;
         int client_address_len = sizeof(client_address);
         int client_id;
 
         //accept connection request from peer client
-        if((client_id=accept(socket_id,  (struct sockaddr *)&client_address , (socklen_t *)&client_address_len)) < _z)
+        if((client_id = accept(socket_id,  (struct sockaddr *)&client_address , (socklen_t *)&client_address_len)) < 0)
         {
             perror("Client connection request couldn't be accepted\n"); 
             return -1;
         }
 
         //receive filename that peer client is requesting
-        if(recv(client_id,filename,max_buffer_size,_z) < _z)
+        if(recv(client_id,filename,max_buffer_size,0) < 0)
         {
             perror("Filename couldn't be received\n");
             return -1;
         }
 
         printf("Client server is requesting for file with filename = %s\n", filename);
-        int file_descriptor =open(filename,O_RDONLY);
+        int file_descriptor = open(filename,O_RDONLY);
 
         char f_message[max_buffer_size];
 
         // File not found
 
-        if(file_descriptor==-1)
+        if(file_descriptor == -1)
         {
             sprintf(f_message, "0@");
             int f_messagelen = strlen(f_message);
             printf("File not found\n");
 
             //intimate the peer client that file was not found
-            if(send(client_id,f_message,f_messagelen,_z) != f_messagelen){
+            if(send(client_id,f_message,f_messagelen,0) != f_messagelen){
                 perror("Message not sent\n");
                 return -1;
             }
@@ -148,7 +140,7 @@ int main(int argc, char *argv[])
         // File found, sending file
         struct stat file_stats;
 
-        if (fstat(file_descriptor, &file_stats) < _z)
+        if (fstat(file_descriptor, &file_stats) < 0)
         {
                 fprintf(stderr, "Error in obtaining file stats : %s", strerror(errno)); //error in obtaining file stats
 
@@ -166,11 +158,11 @@ int main(int argc, char *argv[])
             return -1;
         }
         
-        off_t offset = _z;
-        long int sent_bytes=_z,remain_data = file_stats.st_size;
+        off_t offset = 0;
+        long int sent_bytes=0,remain_data = file_stats.st_size;
         
         // Sending file data
-        while (((sent_bytes = sendfile(client_id, file_descriptor, &offset, BUFSIZ)) > _z) && (remain_data > _z))
+        while (((sent_bytes = sendfile(client_id, file_descriptor, &offset, BUFSIZ)) > 0) && (remain_data > 0))
         {   
             remain_data -= sent_bytes;
             fprintf(stdout, "Server sent %ld bytes from file's data, offset = %ld and remaining data = %ld\n", sent_bytes, offset, remain_data);
