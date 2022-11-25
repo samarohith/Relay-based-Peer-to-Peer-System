@@ -30,7 +30,7 @@ After each negotiation phase, the TCP connection on both sides are closed gracef
 2. run   
     for server:  ./server serverport  
     for peer:  ./node serverIp serverPort peerPort  
-    for client:  ./client serverIp clientPort  
+    for client:  ./client serverIp serverPort  
     server address is localhost here
 3. The requested file should be with a node. The client will ask for a file name and return the file if it is found with any node.
 
