@@ -117,8 +117,8 @@ int main(int argc, char *argv[])
 			// server sends connection confirmation
 			if(send(client_id,msg,msg_len,0) != msg_len)
 			{
-			perror("Message not sent from server\n");
-			return -1;
+				perror("Message not sent from server\n");
+				return -1;
 			}
 
 			peer_count++;
