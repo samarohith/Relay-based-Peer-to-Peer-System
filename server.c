@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
 		if(*type == '0')
 		{
-			// Peer Client
+			// Client
 			char ip_addr[buffer_size];
 
 			printf("Peer client port: %d\n",ntohs(client_addr.sin_port));
