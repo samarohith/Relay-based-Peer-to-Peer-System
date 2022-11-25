@@ -10,7 +10,7 @@
 
 #define max_buffer_size 1024
 
- // Requesting response from relay server function ----------
+ // Requesting response from relay server
 void request(char *argv[],int socket_id){
     char  message[] = "1#Hi there! This is peer node." ;
     sprintf(message,"%s#%d",message,atoi(argv[3]));
