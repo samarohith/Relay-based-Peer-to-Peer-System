@@ -1,228 +1,140 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <netdb.h>
-#include <netinet/in.h>
-
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <string.h>
 
-void doprocessing (int sock,int port);
+#define buffer_size 1024
 
-int main( int argc, char *argv[] ) {
-   int sockfd, newsockfd, portno, clilen;
-   char buffer[256];
-   struct sockaddr_in serv_addr, cli_addr;
-   int n, pid;
-   FILE * output;
-   output = fopen("node.txt","w");
-   fclose(output);  
+int main(int argc, char *argv[])
+{
+ 	int i = 0, sockfd;
+ 	char buffer[buffer_size];
+ 	int _c = 2;
+	if(argc != _c)
+	{
+		printf("\nInput format: %s <Server port number> , terminating! \n",argv[0]);       // invalid input by user
+		return -1;
+	}
 
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);       // socket file descriptor for server
+        int _z = 0;
+	if(sockfd < _z)
+	{ 						 // failed to get valid socket file descriptor
+		perror("Socket error, terminating! \n");
+		return -1;
+	}
 
-   if (argc < 2) {
-      fprintf(stderr,"usage %s port\n", argv[0]);
-      exit(0);
-   }
-   
-   /* First call to socket() function */
-   sockfd = socket(AF_INET, SOCK_STREAM, 0);
-   
-   if (sockfd < 0) {
-      perror("ERROR opening socket");
-      exit(1);
-   }
-   
-   /* Initialize socket structure */
-   bzero((char *) &serv_addr, sizeof(serv_addr));
-   portno = atoi(argv[1]);
-   
-   serv_addr.sin_family = AF_INET;
-   serv_addr.sin_addr.s_addr = INADDR_ANY;
-   serv_addr.sin_port = htons(portno);
-   
-   /* Now bind the host address using bind() call.*/
-   if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-      perror("ERROR on binding");
-      exit(1);
-   }
-   
-   /* Now start listening for the clients, here
-      * process will go in sleep mode and will wait
-      * for the incoming connection
-   */
-   
-   listen(sockfd,5);
-   clilen = sizeof(cli_addr);
-  printf("Server started, now listening....\n");
-   
-   while (1) {
-      newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-		
-      if (newsockfd < 0) {
-         perror("ERROR on accept");
-         exit(1);
-      }
-            
-      /* Create child process */
-      pid = fork();
-		
-      if (pid < 0) {
-         perror("ERROR on fork");
-         exit(1);
-      }
-      
-      if (pid == 0) {
-         /* This is the client process */
-         close(sockfd);
-    
-    //processing-------------------------------------------------     
-   int n,flag=0,port=ntohs(cli_addr.sin_port)+200,sock=newsockfd;
-   char buffer[256];
-   bzero(buffer,256);
-   n = read(sock,buffer,255);
-   if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-   }
-   if(strcmp(buffer,"REQUEST : node")==0)
-      flag=1;
-   else if(strcmp(buffer,"REQUEST : client")==0)
-      flag=2;
+	struct sockaddr_in serv_addr;		   	// initializing server address attributes
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv_addr.sin_port = htons(atoi(argv[1]));
 
-   
-   printf("Received Message - %s\n",buffer);
-   
-   if(flag==1){
-	      printf("Received port from client on which it will listen - %d\n",port);
-	 /* Store the IP address and port number of the clients------------------------------------------------- */
-         char clntName[INET_ADDRSTRLEN];
-		if(inet_ntop(AF_INET,&cli_addr.sin_addr.s_addr,clntName,sizeof(clntName))!=NULL){
-			output = fopen("node.txt","a+");  
-			fprintf(output,"%s%c%d\n",clntName,' ',port);  
-			fclose(output);
-		} else {
-			printf("Unable to get address\n"); 
-		} 
-	   
-	char* resp="RESPONSE : Node: 1,";
-	char buffer[50];
-	sprintf(buffer,"%s %d",resp, port);
-	printf("sending the following message - %s\n",buffer);
-	n = write(sock,buffer,strlen(buffer));
-	if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-   }
-   }//if node
-   
-   else if(flag==2){
-	char* resp="RESPONSE : client: 1";
-	n = write(sock,resp,strlen(resp));
+	if(bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < _z)
+	{
+		perror("Unable to bind, terminating!\n");		//bind failed
+		return -1;
+	}
+
+	printf("Server established with server port number = %d\n\n",ntohs(serv_addr.sin_port));    // server running
+
+	listen(sockfd,2); 		// accepting connections, backlog=5
+
+	struct sockaddr_in client_addr;
+	int client_addr_len = sizeof(client_addr);
+	int peer_count = _z;
+	int peer_ids[buffer_size];
+	struct sockaddr_in peer_addresses[buffer_size];
 	
-	n = read(sock,buffer,255);
-	if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-   }
-   printf("Received Message from client - %s\n",buffer);
 
-   if(strcmp(buffer,"REQUEST : peer info")==0){
-	//read the file that stored the peer info
-	FILE *f = fopen("node.txt", "rb");
-	fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);//send the pointer to beginning of the file
+	for (i = _z; i >= _z; i++)     // infinite loop, server doesn't close unless program terminated by user or by error
+	{ 
+	
+		memset(buffer,'\0',sizeof(buffer));
 
-    char *string = malloc(fsize + 1);
-    fread(string, fsize, 1, f);
-    fclose(f);
+		int client_id = accept(sockfd, (struct sockaddr *)&client_addr , (socklen_t *)&client_addr_len);   // clients that are requesting connection with the server
 
-    string[fsize] = 0;
-    printf("Server has the following info:\n%s",string);
-    
-    //send the info to client
-	n = write(sock,string,strlen(string));
-	if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-	}//n
-	}//if peero info
-   }// if client
-   
-   else printf("ERROR : Unknown REQEST message, no action taken\n");
-         
-        // doprocessing(newsockfd,ntohs(cli_addr.sin_port)+200);
-         exit(0);
-      }
-      else {
-         close(newsockfd);
-      }
+		if(client_id < _z)
+		{
+			perror("Accept error, couldn't accept connection\n");
+			return -1;
+		}
+		printf("Connection accepted \n");
+
+		if(recv(client_id,buffer,buffer_size,_z) < _z)     // message received from client
+		{
+			perror("Message not received by server\n");
+			return -1;
+		}
 		
-   } /* end of while */
+		char *type = strtok(buffer, "#");
+		char *temp = strtok(NULL,"#");
+		printf("Message: %s \n",temp);
+		temp = strtok(NULL,"#");
+		
+		int portno;
+		if(temp != NULL)
+			portno = atoi(temp);
+
+		char msg[] = "Hi there! This is the server.";	
+		int msg_len=strlen(msg);	
+
+
+		if(*type == '0')
+		{
+			// Peer Client
+			char ip_addr[buffer_size];
+
+			printf("Peer client port: %d\n",ntohs(client_addr.sin_port));
+			inet_ntop(AF_INET, &(client_addr.sin_addr), ip_addr, buffer_size);
+			printf("Peer client IP: %s\n",ip_addr);
+
+			sprintf(msg,"%s$%d",msg,peer_count);
+			printf("Number of peer nodes = %d\n",peer_count);
+
+			for(i = _z; i < peer_count; i++)    // fetching details of all peer nodes
+			{
+				inet_ntop(AF_INET, &(peer_addresses[i].sin_addr), ip_addr, buffer_size);
+				sprintf(msg,"%s:%s:%d",msg,ip_addr,peer_addresses[i].sin_port);
+			}
+
+			//sending details of all the peer nodes to the peer client
+			if(send(client_id,msg ,strlen(msg),_z) != strlen(msg))
+			{
+				perror("Message not sent\n");
+				exit(-1);
+			}
+		}
+		else if(*type == '1')
+		{
+			// Peer node
+			peer_ids[peer_count] = client_id;
+			peer_addresses[peer_count].sin_family = client_addr.sin_family;
+			peer_addresses[peer_count].sin_port = portno;
+			peer_addresses[peer_count].sin_addr.s_addr = client_addr.sin_addr.s_addr;
+
+			printf("Peer node port: %d\n",portno);
+			printf("Peer node IP: %s\n",inet_ntop(AF_INET, &(client_addr.sin_addr), temp, buffer_size));
+
+			// server sends connection confirmation
+			if(send(client_id,msg,msg_len,_z) != msg_len)
+			{
+			perror("Message not sent from server\n");
+			return -1;
+			}
+
+			peer_count++;
+		}
+
+		else
+		{
+			perror("Invalid Client request\n");  // neither peer node nor peer client
+			return -1;
+		}
+
+		printf("\n");
+	}
+
+	close(sockfd); //close socket
 }
 
-void doprocessing (int sock,int port) {
-   int n,flag=0;
-   char buffer[256];
-   bzero(buffer,256);
-   n = read(sock,buffer,255);
-   if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-   }
-   if(strcmp(buffer,"REQUEST : node")==0)
-      flag=1;
-   else if(strcmp(buffer,"REQUEST : client")==0)
-      flag=2;
-
-   
-   printf("Received Message from client - %s\n",buffer);
-   printf("Received port from client on which it will listen - %d\n",port);
-   if(flag==1){
-	char* resp="RESPONSE : Node: 1,";
-	char buffer[50];
-	sprintf(buffer,"%s %d",resp, port);
-	printf("sending the following message - %s\n",buffer);
-	n = write(sock,buffer,strlen(buffer));
-	if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-   }
-   }
-   
-   else if(flag==2){
-	char* resp="RESPONSE : client: 1";
-	n = write(sock,resp,strlen(resp));
-	
-	n = read(sock,buffer,255);
-	if (n < 0) {
-      perror("ERROR reading from socket");
-      exit(1);
-   }
-   printf("Received Message from client - %s\n",buffer);
-
-   if(strcmp(buffer,"REQUEST : peer info")==0){
-	//read the file that stored the peer info
-	FILE *f = fopen("node.txt", "rb");
-	fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);//send the pointer to beginning of the file
-
-    char *string = malloc(fsize + 1);
-    fread(string, fsize, 1, f);
-    fclose(f);
-
-    string[fsize] = 0;
-    printf("Server has the following info:\n%s",string);
-    
-    //send the info to client
-	n = write(sock,string,strlen(string));
-	if (n < 0) {
-      perror("ERROR writing to socket");
-      exit(1);
-	}//n
-	}//if peero info
-   }// if client
-   
-   else printf("ERROR : Unknown REQEST message, no action taken\n");
-   	
-}
