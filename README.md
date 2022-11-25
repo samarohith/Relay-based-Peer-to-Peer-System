@@ -2,8 +2,7 @@
 Relay based Peer-to-Peer System using Client-Server socket programming.
 
 In this application, we implement three C programs, namely Peer_Client, and Relay_Server
-and Peer_Nodes, and they communicate with each other based on TCP sockets. The aim is to implement a
-simple Relay based Peer-to-Peer System.
+and Peer_Nodes, and they communicate with each other based on TCP sockets. The aim is to implement a Relay based Peer-to-Peer System.
 
 ![]({{site.baseurl}}/diagram.png)
 
