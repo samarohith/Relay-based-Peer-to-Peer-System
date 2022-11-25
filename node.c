@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         long int sent_bytes=0,remain_data = file_stats.st_size;
         
         // Sending file data
-        while (((sent_bytes = sendfile(client_id, file_descriptor, &offset, BUFSIZ)) > 0) && (remain_data > 0))
+        while (((sent_bytes = sendfile(client_id, file_descriptor, &offset, max_buffer_size)) > 0) && (remain_data > 0))
         {   
             remain_data -= sent_bytes;
             fprintf(stdout, "Server sent %ld bytes from file's data, offset = %ld and remaining data = %ld\n", sent_bytes, offset, remain_data);
