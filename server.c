@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 	struct sockaddr_in client_addr;
 	int client_addr_len = sizeof(client_addr);
 	int peer_count = 0;
-	int peer_ids[buffer_size];
-	struct sockaddr_in peer_addresses[buffer_size];
+	int peer_ids[10];
+	struct sockaddr_in peer_addresses[10];
 	
 
 	for (i = 0; i >= 0; i++)     // infinite loop, server doesn't close unless program terminated by user or by error
