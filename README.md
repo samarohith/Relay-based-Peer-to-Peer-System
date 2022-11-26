@@ -6,7 +6,7 @@ and Peer_Nodes, and they communicate with each other based on TCP sockets. The a
 
 ![]({{site.baseurl}}/diagram.png)
 
-**Initially**, the Peer_Nodes will connect to the Relay_Server using the TCP port already known to them. After successful connection, all the Peer_Nodes provide their information (IP address and PORT) to the Relay_Server and close the connections (as shown in Figure 1). The Relay_Server actively maintains all the received information with it. Now the Peer_Nodes will act as servers and wait to accept connection from Peer_Clients (refer phase three).
+**Initially**, the Peer_Nodes will connect to the Relay_Server using the TCP port already known to them. After successful connection, all the Peer_Nodes provide their information (IP address and PORT) to the Relay_Server and close the connections. The Relay_Server actively maintains all the received information with it. Now the Peer_Nodes will act as servers and wait to accept connection from Peer_Clients (refer phase three).
 
 **In second phase**, the Peer_Client will connect to the Relay_Server using the server’s TCP port already
 known to it. After successful connection; it will request the Relay_Server for active Peer_Nodes
