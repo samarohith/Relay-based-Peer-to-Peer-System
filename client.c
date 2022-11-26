@@ -93,7 +93,7 @@ void process_file(int p_count, struct sockaddr_in p_address[])      // Phase 3
 
         fclose(rcvd_file); //close file
         close(sockfd);  //close socket
-    
+        return 0;
     }
 
     if(found == 0) // not found in any of the peers
